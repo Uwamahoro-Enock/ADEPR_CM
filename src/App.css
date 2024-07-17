@@ -1,3 +1,24 @@
-:root {
-    color-scheme: dark;
-}
+/* App.css */
+body.light {
+    background-color: white;
+    color: black;
+  }
+  
+  body.dark {
+    background-color: #121212;
+    color: white;
+  }
+  
+  /* Optional: more styling to differentiate themes */
+  .navbar-light {
+    background-color: #f8f9fa;
+  }
+  
+  .navbar-dark {
+    background-color: #343a40;
+  }
+  
+  .theme-button {
+    color: black !important; /* Important to override Bootstrap's default styles */
+  }
+  

@@ -12,7 +12,12 @@ const navItems = [
   { label: "Testimonials", href: "#" },
 ];
 
-const Navbar = () => {
+interface NavbarProps {
+  theme: string;
+  toggleTheme: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme }) => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   const toggleNavbar = () => {
@@ -20,7 +25,11 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <nav
+      className={`navbar navbar-expand-lg ${
+        theme === "light" ? "navbar-light bg-light" : "navbar-dark bg-dark"
+      } sticky-top`}
+    >
       <div className="container-fluid">
         <a className="navbar-brand d-flex align-items-center" href="#">
           <img
@@ -28,7 +37,6 @@ const Navbar = () => {
             alt="Logo"
             width="40"
             height="40"
-            margin-right="10"
             className="d-inline-block align-text-top me-2"
           />
           ADEPR
@@ -59,6 +67,13 @@ const Navbar = () => {
             ))}
           </ul>
           <div className="d-flex">
+            <button
+              className="btn btn-primary me-2"
+              data-bs-theme="dark"
+              onClick={toggleTheme}
+            >
+              {theme === "light" ? "Dark" : "Light"} Mode
+            </button>
             <button className="btn btn-primary">Welcome</button>
           </div>
         </div>
