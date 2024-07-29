@@ -40,4 +40,10 @@ body.light {
   .notification.error {
     background-color: #f44336;
   }
+  .terminal-text {
+    text-align: right;
+    white-space: pre-wrap;
+    font-family: monospace;
+    color: red;
+  }
   

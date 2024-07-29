@@ -1,10 +1,11 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import axios, { AxiosError } from "axios";
 
 function FetchMember() {
   const [memberId, setMemberId] = useState("");
   const [memberDetails, setMemberDetails] = useState<any>(null);
   const [error, setError] = useState("");
+  const [displayText, setDisplayText] = useState("");
 
   const validateId = (id: string) => {
     if (id.length !== 16) {
@@ -21,6 +22,7 @@ function FetchMember() {
     if (validationError) {
       setError(validationError);
       setMemberDetails(null);
+      setDisplayText("");
       return;
     }
 
@@ -32,19 +34,43 @@ function FetchMember() {
       if (response.status === 200) {
         setMemberDetails(response.data);
         setError(""); // Clear any previous errors
-      } else if (response.status === 404) {
+      }
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError;
+      if (axiosError.response && axiosError.response.status === 404) {
         setError("User doesn't exist");
         setMemberDetails(null);
+        setDisplayText("");
       } else {
-        setError("An unexpected error occurred");
+        // Handle network or other unexpected errors
+        setError("An error occurred while fetching member details");
         setMemberDetails(null);
+        setDisplayText("");
       }
-    } catch (error) {
-      // Handle network or other unexpected errors
-      setError("An error occurred while fetching member details");
-      setMemberDetails(null);
     }
   };
+
+  useEffect(() => {
+    if (memberDetails) {
+      const details = `
+        Full Name: ${memberDetails.full_name}
+        Age: ${memberDetails.age}
+        Location: ${memberDetails.location}
+        Marital Status: ${memberDetails.marital_status}
+        Role: ${memberDetails.role}
+        Contact Number: ${memberDetails.contact_number}
+      `;
+      let index = 0;
+      const interval = setInterval(() => {
+        setDisplayText(details.slice(0, index));
+        index++;
+        if (index > details.length) {
+          clearInterval(interval);
+        }
+      }, 50); // Adjust the speed here
+      return () => clearInterval(interval);
+    }
+  }, [memberDetails]);
 
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-light text-dark">
@@ -83,7 +109,7 @@ function FetchMember() {
                 borderRadius: "5px",
               }}
             >
-              {JSON.stringify(memberDetails, null, 2)}
+              {displayText}
             </pre>
           </div>
         )}

@@ -41,15 +41,7 @@ app.post('/register-member', async (req, res) => {
 
   try {
     const connection = await communityPool.getConnection();
-    
-    // Check if ID_number already exists
-    const [existingMember] = await connection.query('SELECT * FROM members WHERE ID_number = ?', [ID_number]);
-    if (existingMember.length > 0) {
-      connection.release();
-      return res.status(409).json({ message: 'ID number already exists' }); // Conflict status
-    }
 
-    // Insert new member
     const query = 'INSERT INTO members (full_name, age, location, marital_status, ID_number, role, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?)';
     const values = [full_name, age, location, marital_status, ID_number, role, contact_number];
     await connection.query(query, values);
@@ -62,13 +54,13 @@ app.post('/register-member', async (req, res) => {
   }
 });
 
-// Define the fetch member route handler
+// Define the member fetching route handler
 app.get('/fetch-member/:id', async (req, res) => {
-  const { id } = req.params;
+  const memberId = req.params.id;
 
   try {
     const connection = await communityPool.getConnection();
-    const [rows] = await connection.query('SELECT * FROM members WHERE ID_number = ?', [id]);
+    const [rows] = await connection.query('SELECT * FROM members WHERE ID_number = ?', [memberId]);
     connection.release();
 
     if (rows.length > 0) {
@@ -77,8 +69,8 @@ app.get('/fetch-member/:id', async (req, res) => {
       res.status(404).json({ message: 'User does not exist' });
     }
   } catch (error) {
-    console.error('Error fetching member details:', error);
-    res.status(500).json({ message: 'Internal server error', error: error.message });
+    console.error('Error fetching member:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
