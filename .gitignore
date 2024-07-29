@@ -6,12 +6,17 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# dotenv environment variable file
 .env
+
+# Node modules and distribution directories
 node_modules
 dist
-db.js
 dist-ssr
-*.local
+
+# Local database configuration file
+db.js
 
 # Editor directories and files
 .vscode/*
