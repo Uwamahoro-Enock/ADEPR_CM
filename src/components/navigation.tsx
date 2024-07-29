@@ -4,7 +4,7 @@ import { FiMenu, FiX } from "react-icons/fi";
 
 const navItems = [
   { label: "Features", href: "#" },
-  { label: "Bible Studies", href: "#" },
+  { label: "Bible Studies", href: "https://www.youtube.com/watch?v=o_FplGpMczg" },
   {
     label: "Youtube Live Service",
     href: "https://www.youtube.com/@ItoreroADEPR",
