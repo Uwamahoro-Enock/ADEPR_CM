@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Login from "./components/login";
 import RegistrarPage from "./components/RegistrarPage";
 import Navbar from "./components/navigation";
+import FetchMember from "./components/FetchMember";
 import "./App.css"; // Ensure to create appropriate CSS for dark and light themes
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           path="/registrar"
           element={<RegistrarPage theme={theme} toggleTheme={toggleTheme} />}
         />
+        <Route path="/fetch-member" element={<FetchMember />} />
       </Routes>
     </>
   );
