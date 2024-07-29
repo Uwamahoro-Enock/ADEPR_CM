@@ -39,23 +39,14 @@ app.post('/login', async (req, res) => {
 app.post('/register-member', async (req, res) => {
   const { full_name, age, location, marital_status, ID_number, role, contact_number } = req.body;
 
-  if (!full_name || !age || !location || !ID_number || !role || !contact_number) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
-  if (contact_number.length !== 10 || ID_number.length !== 16) {
-    return res.status(400).json({ message: 'Invalid contact number or ID number length' });
-  }
-
   try {
     const connection = await communityPool.getConnection();
-
+    
     // Check if ID_number already exists
-    const [existing] = await connection.query('SELECT * FROM members WHERE ID_number = ?', [ID_number]);
-
-    if (existing.length > 0) {
+    const [existingMember] = await connection.query('SELECT * FROM members WHERE ID_number = ?', [ID_number]);
+    if (existingMember.length > 0) {
       connection.release();
-      return res.status(400).json({ message: 'ID number already exists' });
+      return res.status(409).json({ message: 'ID number already exists' }); // Conflict status
     }
 
     // Insert new member
@@ -67,6 +58,26 @@ app.post('/register-member', async (req, res) => {
     res.status(201).json({ message: 'Member registered successfully' });
   } catch (error) {
     console.error('Error registering member:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
+// Define the fetch member route handler
+app.get('/fetch-member/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const connection = await communityPool.getConnection();
+    const [rows] = await connection.query('SELECT * FROM members WHERE ID_number = ?', [id]);
+    connection.release();
+
+    if (rows.length > 0) {
+      res.status(200).json(rows[0]);
+    } else {
+      res.status(404).json({ message: 'User does not exist' });
+    }
+  } catch (error) {
+    console.error('Error fetching member details:', error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
