@@ -19,7 +19,8 @@ function Login() {
       );
 
       if (response.status === 200) {
-        // Login successful, redirect to the registrar's page
+        // Login successful, store token and redirect
+        localStorage.setItem('token', response.data.token); // Store JWT in local storage
         navigate("/registrar");
       } else {
         setError("An unknown error occurred. Please try again.");

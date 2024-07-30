@@ -27,8 +27,10 @@ function FetchMember() {
     }
 
     try {
+      const token = localStorage.getItem('token'); // Assuming the token is stored in localStorage after login
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/fetch-member/${memberId}`
+        `${import.meta.env.VITE_API_URL}/fetch-member/${memberId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.status === 200) {

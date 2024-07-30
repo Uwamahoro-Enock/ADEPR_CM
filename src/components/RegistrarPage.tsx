@@ -7,10 +7,7 @@ interface RegistrarPageProps {
   toggleTheme: () => void;
 }
 
-const RegistrarPage: React.FC<RegistrarPageProps> = ({
-  theme,
-  toggleTheme,
-}) => {
+const RegistrarPage: React.FC<RegistrarPageProps> = ({ theme, toggleTheme }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     full_name: "",
@@ -24,22 +21,33 @@ const RegistrarPage: React.FC<RegistrarPageProps> = ({
 
   const [notification, setNotification] = useState<{ message: string; type: "success" | "error" } | null>(null);
 
+  // Check if user is authenticated
+  const checkAuthentication = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
+  };
+
+  React.useEffect(() => {
+    checkAuthentication();
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
-    setFormData({
-      ...formData,
-      [id]: value
-    });
+    setFormData({ ...formData, [id]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch("http://localhost:3000/register-member", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
@@ -60,10 +68,10 @@ const RegistrarPage: React.FC<RegistrarPageProps> = ({
       } else {
         setNotification({ message: result.message || "Failed to register member", type: "error" });
       }
-      
+
       // Hide notification after 2 seconds
       setTimeout(() => setNotification(null), 2000);
-      
+
     } catch (error) {
       console.error("Error:", error);
       setNotification({ message: "Error occurred while registering member", type: "error" });
@@ -84,121 +92,49 @@ const RegistrarPage: React.FC<RegistrarPageProps> = ({
       </div>
       <h1 className="text-center">Welcome to the Registrar's Page</h1>
       <form onSubmit={handleSubmit}>
+        {/* Form fields for member registration */}
         <div className="mb-3">
-          <label htmlFor="full_name" className="form-label">
-            Full Name
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="full_name"
-            value={formData.full_name}
-            onChange={handleChange}
-            placeholder="Enter your name"
-            required
-          />
+          <label htmlFor="full_name" className="form-label">Full Name</label>
+          <input type="text" id="full_name" className="form-control" value={formData.full_name} onChange={handleChange} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="contact_number" className="form-label">
-            Contact Number
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="contact_number"
-            value={formData.contact_number}
-            onChange={handleChange}
-            placeholder="Enter your contact number"
-            required
-            pattern="\d{10}"
-            title="Contact number must be 10 digits"
-          />
+          <label htmlFor="age" className="form-label">Age</label>
+          <input type="number" id="age" className="form-control" value={formData.age} onChange={handleChange} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="ID_number" className="form-label">
-            ID Number
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="ID_number"
-            value={formData.ID_number}
-            onChange={handleChange}
-            placeholder="Enter your ID number"
-            required
-            pattern="\d{16}"
-            title="ID number must be 16 digits"
-          />
+          <label htmlFor="location" className="form-label">Location</label>
+          <input type="text" id="location" className="form-control" value={formData.location} onChange={handleChange} required />
         </div>
         <div className="mb-3">
-          <label htmlFor="age" className="form-label">
-            Age
-          </label>
-          <input
-            type="number"
-            className="form-control"
-            id="age"
-            value={formData.age}
-            onChange={handleChange}
-            placeholder="Enter your age"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="location" className="form-label">
-            Location
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Enter your location"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="role" className="form-label">
-            Role
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="role"
-            value={formData.role}
-            onChange={handleChange}
-            placeholder="Enter your role"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="marital_status" className="form-label">
-            Marital Status
-          </label>
-          <select className="form-control" id="marital_status" value={formData.marital_status} onChange={handleChange} required>
+          <label htmlFor="marital_status" className="form-label">Marital Status</label>
+          <select id="marital_status" className="form-control" value={formData.marital_status} onChange={handleChange}>
             <option value="single">Single</option>
             <option value="married">Married</option>
             <option value="divorced">Divorced</option>
-            <option value="widowed">Widowed</option>
           </select>
         </div>
-        <button type="submit" className="btn btn-primary">
-          Submit
-        </button>
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={handleNavigate}
-        >
-          Fetch Data
-        </button>
+        <div className="mb-3">
+          <label htmlFor="ID_number" className="form-label">ID Number</label>
+          <input type="text" id="ID_number" className="form-control" value={formData.ID_number} onChange={handleChange} required />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="role" className="form-label">Role</label>
+          <input type="text" id="role" className="form-control" value={formData.role} onChange={handleChange} required />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="contact_number" className="form-label">Contact Number</label>
+          <input type="text" id="contact_number" className="form-control" value={formData.contact_number} onChange={handleChange} required />
+        </div>
+        <button type="submit" className="btn btn-primary">Register</button>
       </form>
       {notification && (
-        <div className={`notification ${notification.type}`}>
+        <div className={`alert alert-${notification.type === "success" ? "success" : "danger"} mt-3`}>
           {notification.message}
         </div>
       )}
+      <button className="btn btn-secondary mt-3" onClick={handleNavigate}>
+        Fetch Member
+      </button>
     </div>
   );
 };
